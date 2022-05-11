@@ -51,6 +51,7 @@ public class PhotoView extends ImageView implements IPhotoView {
         if (attr != null) {
             TypedArray array = context.obtainStyledAttributes(attr, R.styleable.PhotoView);
             mAttached = array.getBoolean(R.styleable.PhotoView_attached, true);
+            array.recycle();
         }
         init();
     }
