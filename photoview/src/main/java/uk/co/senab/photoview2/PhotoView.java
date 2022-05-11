@@ -16,7 +16,9 @@
 package uk.co.senab.photoview2;
 
 import android.content.Context;
+import android.content.res.TypedArray;
 import android.graphics.Bitmap;
+import android.graphics.ImageFormat;
 import android.graphics.Matrix;
 import android.graphics.RectF;
 import android.graphics.drawable.Drawable;
@@ -25,12 +27,15 @@ import android.util.AttributeSet;
 import android.view.GestureDetector;
 import android.widget.ImageView;
 
+import uk.co.senab.photoview.R;
+
 public class PhotoView extends ImageView implements IPhotoView {
 
     private PhotoViewAttacher mAttacher;
 
     private ScaleType mPendingScaleType;
 
+    private boolean mAttached;
     public PhotoView(Context context) {
         this(context, null);
     }
@@ -42,11 +47,17 @@ public class PhotoView extends ImageView implements IPhotoView {
     public PhotoView(Context context, AttributeSet attr, int defStyle) {
         super(context, attr, defStyle);
         super.setScaleType(ScaleType.MATRIX);
+
+        if (attr != null) {
+            TypedArray array = context.obtainStyledAttributes(attr, R.styleable.PhotoView);
+            mAttached = array.getBoolean(R.styleable.PhotoView_attached, true);
+        }
         init();
     }
 
     protected void init() {
-        if (null == mAttacher || null == mAttacher.getImageView()) {
+
+        if (mAttached && (null == mAttacher || null == mAttacher.getImageView())) {
             mAttacher = new PhotoViewAttacher(this);
         }
 
@@ -58,87 +69,132 @@ public class PhotoView extends ImageView implements IPhotoView {
 
     @Override
     public void setRotationTo(float rotationDegree) {
-        mAttacher.setRotationTo(rotationDegree);
+        if (mAttacher!=null){
+            mAttacher.setRotationTo(rotationDegree);
+        }
+
     }
 
     @Override
     public void setRotationBy(float rotationDegree) {
-        mAttacher.setRotationBy(rotationDegree);
+        if (mAttacher!=null) {
+            mAttacher.setRotationBy(rotationDegree);
+        }
     }
 
     @Override
     public boolean canZoom() {
-        return mAttacher.canZoom();
+        if (mAttacher!=null) {
+            return mAttacher.canZoom();
+        }
+        return false;
     }
 
     @Override
     public RectF getDisplayRect() {
-        return mAttacher.getDisplayRect();
+        if (mAttacher!=null) {
+            return mAttacher.getDisplayRect();
+        }
+        return new RectF();
     }
 
     @Override
     public void getDisplayMatrix(Matrix matrix) {
-        mAttacher.getDisplayMatrix(matrix);
+        if (mAttacher!=null) {
+            mAttacher.getDisplayMatrix(matrix);
+        }
     }
 
     @Override
     public boolean setDisplayMatrix(Matrix finalRectangle) {
-        return mAttacher.setDisplayMatrix(finalRectangle);
+        if (mAttacher!=null) {
+            return mAttacher.setDisplayMatrix(finalRectangle);
+        }
+        return false;
     }
 
     @Override
     public float getMinimumScale() {
-        return mAttacher.getMinimumScale();
+        if (mAttacher!=null) {
+            return mAttacher.getMinimumScale();
+        }
+        return 1f;
     }
 
     @Override
     public float getMediumScale() {
-        return mAttacher.getMediumScale();
+        if (mAttacher!=null) {
+            return mAttacher.getMediumScale();
+        }
+        return 1f;
     }
 
     @Override
     public float getMaximumScale() {
-        return mAttacher.getMaximumScale();
+        if (mAttacher!=null) {
+            return mAttacher.getMaximumScale();
+        }
+        return 1f;
     }
 
     @Override
     public float getScale() {
-        return mAttacher.getScale();
+        if (mAttacher!=null) {
+            return mAttacher.getScale();
+        }
+        return (float) Math.sqrt((float) Math.pow(getScaleX(), 2) + (float) Math.pow(getScaleY(), 2));
+
     }
 
     @Override
     public ScaleType getScaleType() {
-        return mAttacher.getScaleType();
+        if (mAttacher!=null) {
+            return mAttacher.getScaleType();
+        }
+        return super.getScaleType();
     }
 
     @Override
     public Matrix getImageMatrix() {
-        return mAttacher.getImageMatrix();
+        if (mAttacher!=null) {
+            return mAttacher.getImageMatrix();
+        }
+        return super.getImageMatrix();
     }
 
     @Override
     public void setAllowParentInterceptOnEdge(boolean allow) {
-        mAttacher.setAllowParentInterceptOnEdge(allow);
+        if (mAttacher!=null) {
+            mAttacher.setAllowParentInterceptOnEdge(allow);
+        }
     }
 
     @Override
     public void setMinimumScale(float minimumScale) {
-        mAttacher.setMinimumScale(minimumScale);
+        if (mAttacher!=null) {
+            mAttacher.setMinimumScale(minimumScale);
+        }
     }
 
     @Override
     public void setMediumScale(float mediumScale) {
-        mAttacher.setMediumScale(mediumScale);
+        if (mAttacher!=null) {
+            mAttacher.setMediumScale(mediumScale);
+        }
     }
 
     @Override
     public void setMaximumScale(float maximumScale) {
-        mAttacher.setMaximumScale(maximumScale);
+        if (mAttacher!=null) {
+            mAttacher.setMaximumScale(maximumScale);
+        }
     }
 
     @Override
     public void setScaleLevels(float minimumScale, float mediumScale, float maximumScale) {
-        mAttacher.setScaleLevels(minimumScale, mediumScale, maximumScale);
+        if (mAttacher!=null) {
+            mAttacher.setScaleLevels(minimumScale, mediumScale, maximumScale);
+        }
     }
 
     @Override
@@ -177,37 +233,51 @@ public class PhotoView extends ImageView implements IPhotoView {
 
     @Override
     public void setOnMatrixChangeListener(PhotoViewAttacher.OnMatrixChangedListener listener) {
-        mAttacher.setOnMatrixChangeListener(listener);
+        if (mAttacher!=null) {
+            mAttacher.setOnMatrixChangeListener(listener);
+        }
     }
 
     @Override
     public void setOnLongClickListener(OnLongClickListener l) {
-        mAttacher.setOnLongClickListener(l);
+        if (mAttacher!=null) {
+            mAttacher.setOnLongClickListener(l);
+        }
     }
 
     @Override
     public void setOnPhotoTapListener(PhotoViewAttacher.OnPhotoTapListener listener) {
-        mAttacher.setOnPhotoTapListener(listener);
+        if (mAttacher!=null) {
+            mAttacher.setOnPhotoTapListener(listener);
+        }
     }
 
     @Override
     public void setOnViewTapListener(PhotoViewAttacher.OnViewTapListener listener) {
-        mAttacher.setOnViewTapListener(listener);
+        if (mAttacher!=null) {
+            mAttacher.setOnViewTapListener(listener);
+        }
     }
 
     @Override
     public void setScale(float scale) {
-        mAttacher.setScale(scale);
+        if (mAttacher!=null) {
+            mAttacher.setScale(scale);
+        }
     }
 
     @Override
     public void setScale(float scale, boolean animate) {
-        mAttacher.setScale(scale, animate);
+        if (mAttacher!=null) {
+            mAttacher.setScale(scale, animate);
+        }
     }
 
     @Override
     public void setScale(float scale, float focalX, float focalY, boolean animate) {
-        mAttacher.setScale(scale, focalX, focalY, animate);
+        if (mAttacher!=null) {
+            mAttacher.setScale(scale, focalX, focalY, animate);
+        }
     }
 
     @Override
@@ -216,22 +286,30 @@ public class PhotoView extends ImageView implements IPhotoView {
             mAttacher.setScaleType(scaleType);
         } else {
             mPendingScaleType = scaleType;
+            super.setScaleType(scaleType);
         }
     }
 
     @Override
     public void setZoomable(boolean zoomable) {
-        mAttacher.setZoomable(zoomable);
+        if (mAttacher!=null) {
+            mAttacher.setZoomable(zoomable);
+        }
     }
 
     @Override
     public Bitmap getVisibleRectangleBitmap() {
-        return mAttacher.getVisibleRectangleBitmap();
+        if (mAttacher!=null) {
+            return mAttacher.getVisibleRectangleBitmap();
+        }
+        return getDrawingCache();
     }
 
     @Override
     public void setZoomTransitionDuration(int milliseconds) {
-        mAttacher.setZoomTransitionDuration(milliseconds);
+        if (mAttacher!=null) {
+            mAttacher.setZoomTransitionDuration(milliseconds);
+        }
     }
 
     @Override
@@ -241,23 +319,31 @@ public class PhotoView extends ImageView implements IPhotoView {
 
     @Override
     public void setOnDoubleTapListener(GestureDetector.OnDoubleTapListener newOnDoubleTapListener) {
-        mAttacher.setOnDoubleTapListener(newOnDoubleTapListener);
+        if (mAttacher!=null) {
+            mAttacher.setOnDoubleTapListener(newOnDoubleTapListener);
+        }
     }
 
     @Override
     public void setOnScaleChangeListener(PhotoViewAttacher.OnScaleChangeListener onScaleChangeListener) {
-        mAttacher.setOnScaleChangeListener(onScaleChangeListener);
+        if (mAttacher!=null) {
+            mAttacher.setOnScaleChangeListener(onScaleChangeListener);
+        }
     }
 
     @Override
     public void setOnSingleFlingListener(PhotoViewAttacher.OnSingleFlingListener onSingleFlingListener) {
-        mAttacher.setOnSingleFlingListener(onSingleFlingListener);
+        if (mAttacher!=null) {
+            mAttacher.setOnSingleFlingListener(onSingleFlingListener);
+        }
     }
 
     @Override
     protected void onDetachedFromWindow() {
-        mAttacher.cleanup();
-        mAttacher = null;
+        if (mAttacher!=null) {
+            mAttacher.cleanup();
+            mAttacher = null;
+        }
         super.onDetachedFromWindow();
     }
 
